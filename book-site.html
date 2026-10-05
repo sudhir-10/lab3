@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book Information</title>
+<style>
+  html, body { height: 100%; margin: 0; }
+  body { display: flex; font-family: Georgia, serif; background: #f2efe9; }
+  iframe { border: 0; height: 100%; }
+  #left  { width: 30%; min-width: 220px; max-width: 360px; border-right: 3px solid #2f4a3a; }
+  #right { flex: 1; }
+  @media (max-width: 600px) {
+    body { flex-direction: column; }
+    #left { width: 100%; max-width: none; height: 40%; border-right: 0; border-bottom: 3px solid #2f4a3a; }
+    #right { height: 60%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LEFT FRAME: list of books -->
+<iframe id="left" name="left" title="Book list" srcdoc='
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<style>
+  body { margin: 0; font-family: Georgia, serif; background: #2f4a3a; color: #f2efe9; }
+  h1 { font-size: 1.2rem; margin: 0; padding: 20px 18px 14px; font-weight: normal; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  a { display: block; padding: 12px 18px; color: #f2efe9; text-decoration: none;
+      border-top: 1px solid #44624f; cursor: pointer; }
+  a small { display: block; color: #b9c9bd; font-size: .8rem; margin-top: 2px; }
+  a:hover, a:focus-visible { background: #3c5e49; outline: none; }
+  a.active { background: #f2efe9; color: #2f4a3a; }
+  a.active small { color: #5d7566; }
+</style></head>
+<body>
+  <h1>Books</h1>
+  <ul>
+    <li><a data-id="1">Pride and Prejudice<small>Jane Austen</small></a></li>
+    <li><a data-id="2">1984<small>George Orwell</small></a></li>
+    <li><a data-id="3">To Kill a Mockingbird<small>Harper Lee</small></a></li>
+    <li><a data-id="4">The Alchemist<small>Paulo Coelho</small></a></li>
+    <li><a data-id="5">The Great Gatsby<small>F. Scott Fitzgerald</small></a></li>
+  </ul>
+  <script>
+    document.querySelectorAll("a").forEach(function (link) {
+      link.setAttribute("tabindex", "0");
+      function open() {
+        document.querySelectorAll("a").forEach(function (l) { l.classList.remove("active"); });
+        link.classList.add("active");
+        parent.showBook(link.dataset.id);
+      }
+      link.addEventListener("click", open);
+      link.addEventListener("keydown", function (e) { if (e.key === "Enter") open(); });
+    });
+  </script>
+</body></html>'></iframe>
+
+<!-- RIGHT FRAME: book information -->
+<iframe id="right" name="right" title="Book information"></iframe>
+
+<script>
+  var books = {
+    1: { title: "Pride and Prejudice", author: "Jane Austen", year: "1813", genre: "Romance, Satire", pages: 432,
+         about: "Elizabeth Bennet navigates family pressure, social class and her own first impressions as she gets to know the proud Mr. Darcy." },
+    2: { title: "1984", author: "George Orwell", year: "1949", genre: "Dystopian fiction", pages: 328,
+         about: "Winston Smith lives under constant surveillance in a totalitarian state and begins to question the Party that controls every part of life." },
+    3: { title: "To Kill a Mockingbird", author: "Harper Lee", year: "1960", genre: "Southern Gothic, Legal drama", pages: 281,
+         about: "Scout Finch recalls her childhood in Alabama, when her father, a lawyer, defends a Black man falsely accused of a crime." },
+    4: { title: "The Alchemist", author: "Paulo Coelho", year: "1988", genre: "Adventure, Philosophical fiction", pages: 208,
+         about: "Santiago, a young shepherd, travels from Spain to the Egyptian desert in search of treasure and learns to follow his personal calling." },
+    5: { title: "The Great Gatsby", author: "F. Scott Fitzgerald", year: "1925", genre: "Tragedy, Classic", pages: 180,
+         about: "Nick Carraway watches his mysterious neighbour Jay Gatsby chase wealth, status and a lost love in 1920s Long Island." }
+  };
+
+  var css = "body{margin:0;padding:36px 40px;font-family:Georgia,serif;background:#f2efe9;color:#222;line-height:1.6}" +
+            "h1{margin:0 0 4px;font-size:2rem;color:#2f4a3a}" +
+            ".author{margin:0 0 24px;font-style:italic;color:#666;font-size:1.1rem}" +
+            "table{border-collapse:collapse;margin-bottom:24px}" +
+            "th{text-align:left;font-weight:bold;padding:6px 24px 6px 0;color:#2f4a3a;vertical-align:top}" +
+            "td{padding:6px 0}" +
+            "p{max-width:60ch;margin:0}";
+
+  function page(body) {
+    return "<!DOCTYPE html><html><head><meta charset='UTF-8'><style>" + css + "</style></head><body>" + body + "</body></html>";
+  }
+
+  function showBook(id) {
+    var b = books[id];
+    document.getElementById("right").srcdoc = page(
+      "<h1>" + b.title + "</h1>" +
+      "<p class='author'>by " + b.author + "</p>" +
+      "<table>" +
+        "<tr><th>Published</th><td>" + b.year + "</td></tr>" +
+        "<tr><th>Genre</th><td>" + b.genre + "</td></tr>" +
+        "<tr><th>Pages</th><td>" + b.pages + "</td></tr>" +
+      "</table>" +
+      "<p>" + b.about + "</p>"
+    );
+  }
+
+  // Home state for the right frame
+  document.getElementById("right").srcdoc = page(
+    "<h1>Welcome</h1><p class='author'>Book information</p>" +
+    "<p>Select a book from the list on the left to see its author, year, genre, page count and a short summary.</p>"
+  );
+</script>
+
+</body>
+</html>
